@@ -263,3 +263,12 @@ body {
     transform: none !important;
   }
 }
+html {
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+}
+
+#poster {
+  -webkit-text-size-adjust: none;
+  text-size-adjust: none;
+}
