@@ -71,4 +71,12 @@ async function blob(){await templateReady;await document.fonts.ready;draw();retu
 function save(b){const u=URL.createObjectURL(b),a=document.createElement('a');a.href=u;a.download='mandya-my-vote-poster.png';a.click();setTimeout(()=>URL.revokeObjectURL(u),30000);}
 async function run(share){if(!portrait||!ready||working)return;working=true;try{const b=await blob();const file=new File([b],'mandya-my-vote-poster.png',{type:'image/png'});if(share&&navigator.canShare&&navigator.canShare({files:[file]})){await navigator.share({files:[file],title:'ನಾನು ಮತದಾನ ಮಾಡುತ್ತೇನೆ',text:'ಮಂಡ್ಯ ಜಿಲ್ಲಾ ಬ್ರಾಹ್ಮಣ ಸಭಾ ಚುನಾವಣೆ — ಜಿ. ವಿ. ನಾಗರಾಜು ಅವರ ತಂಡದ ಅಭಿಯಾನ'});message('Poster shared.');}else{save(b);message(share?'Poster downloaded. Attach it in your preferred social app.':'Poster downloaded. Ready to post!');}}catch(e){if(e.name!=='AbortError')message('Could not export. Please try again.');}finally{working=false;}}
 $('download').addEventListener('click',()=>run(false));$('share').addEventListener('click',()=>run(true));
-draw();Promise.all([templateReady,document.fonts.load('700 40px Kannada')]).then(()=>{if(!document.fonts.check('700 40px Kannada'))throw Error('font');ready=true;draw();$('download').disabled=!portrait;$('share').disabled=!portrait;}).catch(()=>{message('Poster images or Kannada font could not load. Please refresh before downloading.');});
+draw();Promise.all([
+  templateReady,
+  ...[500, 600, 650, 700, 750].map(weight =>
+    document.fonts.load(
+      `${weight} 40px Kannada`,
+      'ಮಂಡ್ಯ ಜಿಲ್ಲಾ ಬ್ರಾಹ್ಮಣ ಸಭಾ ಚುನಾವಣೆ'
+    )
+  )
+]).then(()=>{if(!document.fonts.check('700 40px Kannada'))throw Error('font');ready=true;draw();$('download').disabled=!portrait;$('share').disabled=!portrait;}).catch(()=>{message('Poster images or Kannada font could not load. Please refresh before downloading.');});
