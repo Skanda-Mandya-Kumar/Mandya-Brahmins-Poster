@@ -5,7 +5,52 @@ const devotionalHeader=new Image();
 const templateReady=(async()=>{devotionalHeader.src='assets/devotional-header.png';await devotionalHeader.decode();})();
 const controls=['zoom','horizontal','vertical','reset'];
 function rounded(x,y,w,h,r){ctx.beginPath();ctx.roundRect(x,y,w,h,r);}
-function text(s,x,y,size,color='#731d2d',weight=700,max=980){ctx.fillStyle=color;ctx.font=`${weight} ${size}px Kannada, sans-serif`;ctx.textAlign='center';ctx.textBaseline='middle';while(ctx.measureText(s).width>max&&size>15){size--;ctx.font=`${weight} ${size}px Kannada, sans-serif`;}ctx.fillText(s,x,y);}
+function text(
+  s, x, y, size,
+  color = '#731d2d',
+  weight = 700,
+  max = 980
+) {
+  ctx.save();
+
+  const safeWidth = Math.min(
+    max,
+    2 * Math.min(x - 60, canvas.width - 60 - x)
+  );
+
+  ctx.fillStyle = color;
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+
+  let measuredWidth;
+
+  do {
+    ctx.font = `${weight} ${size}px Kannada, sans-serif`;
+
+    const metrics = ctx.measureText(s);
+
+    measuredWidth = Math.max(
+      metrics.width,
+      Math.abs(metrics.actualBoundingBoxLeft || 0) +
+      Math.abs(metrics.actualBoundingBoxRight || 0)
+    );
+
+    if (measuredWidth <= safeWidth || size <= 16) break;
+    size -= 1;
+  } while (true);
+
+  // Fit the actual lettering within the available space.
+  const scale = Math.min(
+    1,
+    safeWidth / Math.max(measuredWidth, 1)
+  );
+
+  ctx.translate(x, y);
+  ctx.scale(scale, 1);
+  ctx.fillText(s, 0, 0, safeWidth / scale);
+
+  ctx.restore();
+}
 function ornament(y){ctx.strokeStyle='#c29648';ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(120,y);ctx.lineTo(485,y);ctx.moveTo(595,y);ctx.lineTo(960,y);ctx.stroke();ctx.save();ctx.translate(540,y);ctx.rotate(Math.PI/4);ctx.fillStyle='#c29648';ctx.fillRect(-8,-8,16,16);ctx.restore();}
 function draw(){const story=$('format').value==='story';canvas.height=story?1920:1350;const H=canvas.height;ctx.fillStyle='#fff7e3';ctx.fillRect(0,0,1080,H);const bg=ctx.createRadialGradient(540,H*.4,0,540,H*.4,H*.8);bg.addColorStop(0,'#fffcef');bg.addColorStop(1,'#efdbac');ctx.fillStyle=bg;ctx.fillRect(0,0,1080,H);ctx.strokeStyle='#b68b40';ctx.lineWidth=4;rounded(24,24,1032,H-48,25);ctx.stroke();ctx.lineWidth=1;rounded(37,37,1006,H-74,20);ctx.stroke();
 if(devotionalHeader.complete&&devotionalHeader.naturalWidth){const headerH=990*devotionalHeader.naturalHeight/devotionalHeader.naturalWidth;ctx.save();rounded(45,45,990,headerH,12);ctx.clip();ctx.drawImage(devotionalHeader,45,45,990,headerH);ctx.restore();}
