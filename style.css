@@ -246,3 +246,20 @@ body {
     gap: 8px;
   }
 }
+@media (max-width: 800px) {
+  .preview canvas#poster {
+    position: static !important;
+    display: block !important;
+
+    width: auto !important;
+    height: auto !important;
+
+    max-width: 100% !important;
+    max-height: 65vh !important;
+    max-height: 65svh !important;
+
+    margin: 0 auto !important;
+    object-fit: contain;
+    transform: none !important;
+  }
+}
