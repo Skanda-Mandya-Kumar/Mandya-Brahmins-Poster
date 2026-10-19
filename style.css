@@ -181,3 +181,68 @@ body {
     overflow-wrap: anywhere;
   }
 }
+/* Prevent the canvas's 1080px width from expanding its container */
+.workspace {
+  grid-template-columns: minmax(0, 390px) minmax(0, 1fr);
+}
+
+.workspace > *,
+.controls,
+.preview {
+  min-width: 0;
+}
+
+.preview {
+  display: block;
+}
+
+#poster {
+  display: block;
+  width: 100% !important;
+  max-width: 480px !important;
+  height: auto !important;
+  margin-inline: auto;
+}
+
+@media (max-width: 800px) {
+  header {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 16px;
+  }
+
+  header .tag {
+    display: block !important;
+    width: 100%;
+    white-space: normal;
+    overflow-wrap: anywhere;
+    text-align: center;
+    line-height: 1.8;
+  }
+
+  .workspace {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    width: 100%;
+  }
+
+  .workspace > .controls,
+  .workspace > .preview {
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+    margin-inline: 0;
+  }
+
+  .preview {
+    padding: 16px 10px;
+  }
+
+  .preview-heading {
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+}
