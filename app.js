@@ -12,43 +12,39 @@ function text(
   max = 980
 ) {
   ctx.save();
+  ctx.fillStyle = color;
+  ctx.textAlign = 'left';
+  ctx.textBaseline = 'middle';
+  ctx.direction = 'ltr';
 
-  const safeWidth = Math.min(
+  const available = Math.min(
     max,
     2 * Math.min(x - 60, canvas.width - 60 - x)
   );
 
-  ctx.fillStyle = color;
-  ctx.textAlign = 'center';
-  ctx.textBaseline = 'middle';
-
-  let measuredWidth;
+  let metrics;
+  let left;
+  let right;
 
   do {
     ctx.font = `${weight} ${size}px Kannada, sans-serif`;
+    metrics = ctx.measureText(s);
 
-    const metrics = ctx.measureText(s);
+    left = Number.isFinite(metrics.actualBoundingBoxLeft)
+      ? metrics.actualBoundingBoxLeft : 0;
 
-    measuredWidth = Math.max(
-      metrics.width,
-      Math.abs(metrics.actualBoundingBoxLeft || 0) +
-      Math.abs(metrics.actualBoundingBoxRight || 0)
-    );
+    right = Number.isFinite(metrics.actualBoundingBoxRight)
+      ? metrics.actualBoundingBoxRight : metrics.width;
 
-    if (measuredWidth <= safeWidth || size <= 16) break;
+    if (Math.max(metrics.width, left + right) <= available) {
+      break;
+    }
+
     size -= 1;
-  } while (true);
+  } while (size > 8);
 
-  // Fit the actual lettering within the available space.
-  const scale = Math.min(
-    1,
-    safeWidth / Math.max(measuredWidth, 1)
-  );
-
-  ctx.translate(x, y);
-  ctx.scale(scale, 1);
-  ctx.fillText(s, 0, 0, safeWidth / scale);
-
+  const startX = x - (right - left) / 2;
+  ctx.fillText(s, startX, y);
   ctx.restore();
 }
 function ornament(y){ctx.strokeStyle='#c29648';ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(120,y);ctx.lineTo(485,y);ctx.moveTo(595,y);ctx.lineTo(960,y);ctx.stroke();ctx.save();ctx.translate(540,y);ctx.rotate(Math.PI/4);ctx.fillStyle='#c29648';ctx.fillRect(-8,-8,16,16);ctx.restore();}
